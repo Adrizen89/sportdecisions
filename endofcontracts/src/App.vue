@@ -1,5 +1,3 @@
-
-
 <template>
   <div id="app">
     <EndOfContracts />
@@ -7,13 +5,17 @@
 </template>
 
 <script>
-import EndOfContracts from './views/EndOfContracts.vue';
+import EndOfContracts from './views/EndOfContracts.vue'
 export default {
-  name: "App",
+  name: 'App',
   components: {
-    EndOfContracts,
-  },
-};
+    EndOfContracts
+  }
+}
 </script>
 
-
+<style scoped>
+#app {
+  background-color: #000;
+}
+</style>
