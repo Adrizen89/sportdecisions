@@ -1,7 +1,5 @@
 # Cas Pratique - SPORTS DECISIONS
 
-This template should help get you started developing with Vue 3 in Vite.
-
 ## 1️⃣ Introduction
 
 Ce projet a pour objectif de créer une vue détaillée "End of Contracts" pour un club sportif. La vue affiche la date de fin de contrat de chaque joueur, ainsi que les éventuelles options pour prolonger le contrat. Le projet est réalisé en utilisant Vue.js, et doit être responsive pour s'adapter automatiquement aux différentes tailles d'écran.

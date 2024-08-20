@@ -4,7 +4,7 @@
       <th></th>
       <!-- Première cellule vide pour l'alignement avec PlayerInfo -->
       <th colspan="3" class="no-padding">
-        <div class="test">
+        <div class="heading">
           <i class="bi bi-caret-left-fill" @click="$emit('move-first-column')"></i>
 
           <div
@@ -66,7 +66,7 @@ i {
 i:hover {
   color: #d6d6d6;
 }
-.test {
+.heading {
   width: 100%;
   background-color: #354751;
   border-radius: 5px;
@@ -120,10 +120,6 @@ th:first-child {
 
 /* Responsiveness */
 @media screen and (max-width: 768px) {
-  .blue-background::before {
-    transform: translateY(-5px) scaleY(1.2); /* Ajuster pour petits écrans */
-  }
-
   .header-cell {
     padding: 8px;
   }

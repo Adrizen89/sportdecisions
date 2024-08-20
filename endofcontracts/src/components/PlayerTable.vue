@@ -151,7 +151,7 @@ export default {
 
 <style scoped>
 .player-table {
-  padding: 3vh;
+  padding: 2vh;
 }
 td {
   width: 20%;
@@ -164,7 +164,7 @@ td:not(:first-child) {
   vertical-align: middle;
 }
 td:first-child {
-  width: 33%;
+  width: 23%;
 }
 
 .status-green {
