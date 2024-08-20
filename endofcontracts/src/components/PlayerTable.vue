@@ -2,19 +2,29 @@
   <div class="player-table">
     <table class="table table-hover w-100">
       <!-- Utilisation du composant HeadingTable avec les colonnes dynamiques -->
-      <HeadingTable :columns="localColumns" @update-columns="updateColumns" />
+      <HeadingTable
+        :columns="isMobile ? [localColumns[currentColumn]] : localColumns"
+        :currentSortColumn="currentSortColumn"
+        :currentSortDirection="currentSortDirection"
+        @sort-column="setSortColumn"
+        @move-first-column="moveFirstColumnToEnd"
+        @move-last-column="moveLastColumnToStart"
+      />
       <tbody>
         <tr v-for="player in sortedPlayers" :key="player.id">
           <td>
             <PlayerInfo :player="player" />
-            <!-- Utilisation du composant PlayerInfo -->
           </td>
           <td
             v-for="(column, index) in localColumns"
-            :key="index"
-            :class="getStatusClass(column, player.contract_end_status)"
+            :key="column.key"
+            :class="[
+              getStatusClass(column.key, player.contract_end_status),
+              { 'd-none d-md-table-cell': isMobile && index !== currentColumn },
+              { 'd-table-cell': !isMobile || index === currentColumn }
+            ]"
           >
-            {{ formatDate(player[column]) }}
+            {{ player[column.key] ? formatDate(player[column.key]) : '--' }}
           </td>
         </tr>
       </tbody>
@@ -33,17 +43,20 @@ export default {
     PlayerInfo,
     HeadingTable
   },
-
   data() {
     return {
       players,
-      columnNames: ['contract_end', 'option', 'option_validity'], // Ajout de 'Player Info'
-      localColumns: ['contract_end', 'option', 'option_validity'], // Colonnes initiales
+      localColumns: [
+        { label: 'End of Contracts', key: 'contract_end' },
+        { label: 'Option', key: 'option' },
+        { label: 'Option-validity', key: 'option_validity' }
+      ],
       currentSortColumn: null,
-      currentSortDirection: 'asc'
+      currentSortDirection: 'asc',
+      currentColumn: 0, // Colonne actuellement affichée en mode mobile
+      isMobile: window.innerWidth < 768 // Détecter si l'écran est mobile
     }
   },
-
   computed: {
     sortedPlayers() {
       if (!this.currentSortColumn) {
@@ -54,7 +67,6 @@ export default {
         let compareA = a[this.currentSortColumn]
         let compareB = b[this.currentSortColumn]
 
-        // Pour le cas des dates, on peut comparer leur valeur numérique
         if (
           this.currentSortColumn.includes('contract_end') ||
           this.currentSortColumn.includes('option')
@@ -74,17 +86,15 @@ export default {
       })
     }
   },
-
   methods: {
     formatDate(dateStr) {
-      if (!dateStr) return '' // Gérer les cas où la date est nulle
+      if (!dateStr) return ''
       const date = new Date(dateStr)
       const day = String(date.getDate()).padStart(2, '0')
-      const month = String(date.getMonth() + 1).padStart(2, '0') // Les mois commencent à 0
+      const month = String(date.getMonth() + 1).padStart(2, '0')
       const year = date.getFullYear()
       return `${day}-${month}-${year}`
     },
-
     getStatusClass(columnKey, status) {
       if (columnKey === 'contract_end') {
         return {
@@ -95,9 +105,46 @@ export default {
       }
       return ''
     },
-    updateColumns(newColumns) {
-      this.localColumns = newColumns
+    setSortColumn(columnKey) {
+      if (this.currentSortColumn === columnKey) {
+        this.currentSortDirection = this.currentSortDirection === 'asc' ? 'desc' : 'asc'
+      } else {
+        this.currentSortColumn = columnKey
+        this.currentSortDirection = 'asc'
+      }
+    },
+    moveFirstColumnToEnd() {
+      const firstColumn = this.localColumns.shift()
+      this.localColumns.push(firstColumn)
+    },
+    moveLastColumnToStart() {
+      const lastColumn = this.localColumns.pop()
+      this.localColumns.unshift(lastColumn)
+    },
+    // Méthodes pour naviguer entre les colonnes en mode mobile
+    previousColumn() {
+      if (this.currentColumn === 0) {
+        this.currentColumn = this.localColumns.length - 1
+      } else {
+        this.currentColumn--
+      }
+    },
+    nextColumn() {
+      if (this.currentColumn === this.localColumns.length - 1) {
+        this.currentColumn = 0
+      } else {
+        this.currentColumn++
+      }
+    },
+    handleResize() {
+      this.isMobile = window.innerWidth < 768
     }
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
@@ -114,6 +161,10 @@ td {
 }
 td:not(:first-child) {
   text-align: center;
+  vertical-align: middle;
+}
+td:first-child {
+  width: 33%;
 }
 
 .status-green {

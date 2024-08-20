@@ -8,7 +8,6 @@
       <p>{{ player.position }}</p>
     </div>
     <div class="ml-auto">
-      <!-- Ajouter la classe ml-auto -->
       <p>...</p>
     </div>
   </div>
@@ -32,6 +31,10 @@ export default {
   background-color: #003957;
   padding: 10px;
   border-radius: 10px;
+  cursor: pointer;
+}
+.player-info:hover {
+  background-color: #014f79;
 }
 .avatar img {
   width: 40px;
@@ -41,14 +44,17 @@ export default {
 }
 .details h4 {
   margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
   color: #cfd9dc;
-  font-size: clamp(12px, 1.5vw, 18px);
+  font-size: clamp(14px, 1.5vw, 18px);
 }
 
 .details p {
   margin: 0;
-  color: #c3d8de;
-  font-size: clamp(10px, 1.2vw, 16px);
+  font-style: italic;
+  color: #899f9e;
+  font-size: clamp(12px, 1.2vw, 16px);
 }
 .ml-auto {
   margin-left: auto;

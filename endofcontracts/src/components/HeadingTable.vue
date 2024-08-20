@@ -1,24 +1,28 @@
 <template>
   <thead class="thead-rounded">
     <tr class="header-row">
-      <!-- Première cellule vide pour l'alignement avec PlayerInfo -->
       <th></th>
-
-      <!-- Cellule pour contenir la div avec les icônes et les en-têtes -->
+      <!-- Première cellule vide pour l'alignement avec PlayerInfo -->
       <th colspan="3" class="no-padding">
         <div class="test">
-          <i class="bi bi-caret-left-fill" @click="moveFirstColumnToEnd"></i>
+          <i class="bi bi-caret-left-fill" @click="$emit('move-first-column')"></i>
 
           <div
             v-for="(column, index) in columns"
-            :key="index"
+            :key="column.key"
             class="header-cell"
-            :class="{ 'blue-background': isLastThreeColumns(index) }"
+            @click="sortColumn(column.key)"
+            :class="{
+              'blue-background': isLastThreeColumns(index),
+              sortable: true,
+              'sorted-asc': currentSortColumn === column.key && currentSortDirection === 'asc',
+              'sorted-desc': currentSortColumn === column.key && currentSortDirection === 'desc'
+            }"
           >
-            {{ column }}
+            {{ column.label }}
           </div>
 
-          <i class="bi bi-caret-right-fill" @click="moveLastColumnToStart"></i>
+          <i class="bi bi-caret-right-fill" @click="$emit('move-last-column')"></i>
         </div>
       </th>
     </tr>
@@ -31,30 +35,23 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 export default {
   name: 'HeadingTable',
   props: {
-    columns: {
-      type: Array,
-      required: true
-    }
-  },
-  data() {
-    return {
-      localColumns: [...this.columns] // Créer une copie locale des colonnes pour manipulation
-    }
+    columns: Array,
+    currentSortColumn: String,
+    currentSortDirection: String
   },
   methods: {
     isLastThreeColumns(index) {
       // Retourne true pour les trois dernières colonnes
-      return index >= this.localColumns.length - 3
+      return index >= this.columns.length - 3
     },
-
+    sortColumn(columnKey) {
+      this.$emit('sort-column', columnKey)
+    },
     moveFirstColumnToEnd() {
-      const firstColumn = this.localColumns.shift() // Supprime la première colonne
-      this.localColumns.push(firstColumn) // Ajoute la première colonne à la fin
+      this.$emit('move-first-column')
     },
-
     moveLastColumnToStart() {
-      const lastColumn = this.localColumns.pop() // Supprime la dernière colonne
-      this.localColumns.unshift(lastColumn) // Ajoute la dernière colonne au début
+      this.$emit('move-last-column')
     }
   }
 }
@@ -65,6 +62,9 @@ i {
   color: #8899a2;
   margin: 5px;
   cursor: pointer; /* Ajoute un curseur pointeur pour indiquer que c'est cliquable */
+}
+i:hover {
+  color: #d6d6d6;
 }
 .test {
   width: 100%;
@@ -87,12 +87,17 @@ th:first-child {
   background-color: #000;
   color: #66acd6;
   text-align: center;
-  font-size: clamp(0.5rem, 1.5vw, 1rem);
+  font-size: clamp(0.7rem, 1.5vw, 1rem);
+  font-weight: bold;
   text-transform: uppercase;
   border-radius: 5px;
   width: 100%;
   margin: 0 1%;
   height: 6vh;
+  cursor: pointer;
+}
+.header-cell:hover {
+  background-color: #181818;
 }
 
 .no-padding {
@@ -120,7 +125,6 @@ th:first-child {
   }
 
   .header-cell {
-    font-size: clamp(0.4rem, 1.2vw, 0.8rem);
     padding: 8px;
   }
 }
